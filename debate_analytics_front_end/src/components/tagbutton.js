@@ -5,6 +5,15 @@ import SelectedAttackers from "./selectedattackers";
 import SelectedDefenders from "./selecteddefenders";
 import SelectedTopics from "./selectedTopics";
 import NewTopic from "./newtopic";
+import rough from 'roughjs/bundled/rough.esm.js';
+import candlist from "./selectCandidatesList";
+import isAttackAll from "./isAttackAll";
+import isDefendAll from "./isDefendAll";
+
+
+var lineWidth = 1000;
+
+let allAttacks = [];
 
 function send_data(vals) {
     // Simple POST request with a JSON body using fetch
@@ -18,23 +27,42 @@ function send_data(vals) {
         // .then(data => this.setState({ postId: data.id }));
 }
 function deselectall(){
-    for (let cand in SelectedDefenders){
-            document.getElementById("d"+cand).click()
-        }
-    for (let cand in SelectedAttackers){
-            document.getElementById("a"+cand).click()
-        }
+    // for (let cand in SelectedDefenders){
+    //         document.getElementById("d"+cand).click()
+    //     }
+    // for (let cand in SelectedAttackers){
+    //         document.getElementById("a"+cand).click()
+    //     }
     for (let topic in SelectedTopics){
         document.getElementById(topic).click()
+    }
+    if (isAttackAll["All"]){
+        document.getElementById("attackall").click()
+    }
+    else{
+        for (let cand in SelectedAttackers){
+            document.getElementById("a"+cand).click()
+        }
+    }
+    if (isDefendAll["All"]){
+        document.getElementById("defendall").click()
+    }
+    else{
+        for (let cand in SelectedDefenders){
+            document.getElementById("d"+cand).click()
+        }
     }
 }
 
 function TagButton()
 {
+
+    
     const CreateTag = () => {
         var mainComp = document.getElementById("transition")
         var div = document.createElement("div")
-        div.setAttribute("class", "flexbox-container row trans d-flex justify-content-center")
+        div.setAttribute("class", "flexbox-container row trans d-flex justify-content-center");
+        
         // var img = []
         // let i = 0
         // for (let key in SelectedAttackers){
@@ -61,7 +89,63 @@ function TagButton()
         let output = {}
         let attackers  =  Object.keys(SelectedAttackers).map(function(k){return k}).join(", ");
         let defenders  =  Object.keys(SelectedDefenders).map(function(k){return k}).join(", ");
+        
         let topics = "";
+        
+        
+        let candidate_positions = new Object();
+
+        const canvasElement = document.getElementById("canvas");
+        const rc = rough.canvas(canvasElement);
+        const context = canvasElement.getContext("2d");
+
+        const l = Object.keys(candlist).length;
+
+        canvasElement.setAttribute("height", Object.keys(candlist).length*125 +  "px");
+        canvasElement.setAttribute("width", lineWidth + 30 + "px");
+
+        var itr = 0;
+        var arr_pos = 100;
+        if(arr_pos + 100 > lineWidth){
+            lineWidth += 100;
+        }
+        for(let candidate in candlist){
+            rc.line(50, 25 + itr, lineWidth, 25 + itr);
+            var candidate_img = new Image();
+            candidate_img.src = candlist[candidate];
+            context.drawImage(candidate_img, 8, itr, 50, 50);
+            candidate_positions[candidate] = 25 + itr;
+            itr += 75;
+            console.log(candidate, candlist[candidate]);
+        }
+
+        allAttacks.push([Object.keys(SelectedAttackers), Object.keys(SelectedDefenders)]);
+
+        for(const attackRound of allAttacks){
+            const allAttackers = attackRound[0];
+            const allDefenders = attackRound[1];
+            for(const attacker of allAttackers){
+                for(const defender of allDefenders){
+                    if(attacker != defender){
+                        arr_pos += 20;
+                        rc.line(arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
+                        if(candidate_positions[attacker] < candidate_positions[defender]){
+                            //down arrow
+                            rc.line(arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                            rc.line(arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                        }
+                        else{
+                            //up arrow
+                            rc.line(arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
+                            rc.line(arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        
         if(Object.keys(SelectedTopics).length !== 0) {
             topics = Object.keys(SelectedTopics).map(function (k) {
                 return k
@@ -74,34 +158,34 @@ function TagButton()
             }
             topics = topics.concat(NewTopic["topic"])
         }
-
-        let pString = "";
-        pString = pString.concat(attackers);
-        pString = pString.concat(" ");
-        if (Object.keys(SelectedAttackers).length === 1){
-            pString = pString.concat("attacks");
-        }
-        else{
-            pString = pString.concat("attack");
-        }
-        pString = pString.concat(" ");
-        pString = pString.concat(defenders);
-
-        if(topics !== ""){
-            pString = pString.concat(" and discussion topic/s: ")
-            pString = pString.concat(topics)
-        }
-
-        console.log("pString"+pString);
-
-        var p = document.createElement("p");
-        var node = document.createTextNode(pString);
-        p.appendChild(node);
-        div.appendChild(p)
-        mainComp.appendChild(div)
-        mainComp.scrollTop = mainComp.scrollHeight;
-
-
+        //
+        // let pString = "";
+        // pString = pString.concat(attackers);
+        // pString = pString.concat(" ");
+        // if (Object.keys(SelectedAttackers).length === 1){
+        //     pString = pString.concat("attacks");
+        // }
+        // else{
+        //     pString = pString.concat("attack");
+        // }
+        // pString = pString.concat(" ");
+        // pString = pString.concat(defenders);
+        //
+        // if(topics !== ""){
+        //     pString = pString.concat(" and discussion topic/s: ")
+        //     pString = pString.concat(topics)
+        // }
+        //
+        // console.log("pString"+pString);
+        //
+        // var p = document.createElement("p");
+        // var node = document.createTextNode(pString);
+        // p.appendChild(node);
+        // div.appendChild(p)
+        // //mainComp.appendChild(div);
+        // mainComp.appendChild(canvasElement);
+        //
+        //
 
         output["attackers"] = attackers
         output["defenders"] = defenders

@@ -25,6 +25,7 @@ function Tagging() {
               </div>
               <div className= "col-4 rounded borderclass" id = "transition">
                   <h5 className="font-weight-bold">Attack transition</h5>
+                  <canvas id="canvas"></canvas>
               </div>
           </div>
           <div className= "row borderclass">
