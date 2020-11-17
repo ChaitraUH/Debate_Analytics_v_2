@@ -5,7 +5,6 @@ import SelectedAttackers from "./selectedattackers";
 import SelectedDefenders from "./selecteddefenders";
 import SelectedTopics from "./selectedTopics";
 import NewTopic from "./newtopic";
-import rough from 'roughjs/bundled/rough.esm.js';
 import candlist from "./selectCandidatesList";
 import isAttackAll from "./isAttackAll";
 import isDefendAll from "./isDefendAll";
@@ -96,8 +95,14 @@ function TagButton()
         let candidate_positions = new Object();
 
         const canvasElement = document.getElementById("canvas");
-        const rc = rough.canvas(canvasElement);
         const context = canvasElement.getContext("2d");
+
+        function drawLine(x1, y1, x2, y2){
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
 
         const l = Object.keys(candlist).length;
 
@@ -110,7 +115,7 @@ function TagButton()
             lineWidth += 100;
         }
         for(let candidate in candlist){
-            rc.line(50, 25 + itr, lineWidth, 25 + itr);
+            drawLine(50, 25 + itr, lineWidth, 25 + itr);
             var candidate_img = new Image();
             candidate_img.src = candlist[candidate];
             context.drawImage(candidate_img, 8, itr, 50, 50);
@@ -127,17 +132,17 @@ function TagButton()
             for(const attacker of allAttackers){
                 for(const defender of allDefenders){
                     if(attacker != defender){
-                        arr_pos += 20;
-                        rc.line(arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
+                        arr_pos += 30;
+                        drawLine(arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
                         if(candidate_positions[attacker] < candidate_positions[defender]){
                             //down arrow
-                            rc.line(arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-                            rc.line(arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                            drawLine(arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                            drawLine(arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
                         }
                         else{
                             //up arrow
-                            rc.line(arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
-                            rc.line(arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
+                            drawLine(arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
+                            drawLine(arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
                         }
                     }
                 }
