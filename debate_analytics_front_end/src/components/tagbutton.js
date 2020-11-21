@@ -9,10 +9,12 @@ import candlist from "./selectCandidatesList";
 import isAttackAll from "./isAttackAll";
 import isDefendAll from "./isDefendAll";
 
-
 var lineWidth = 1000;
 
 let allAttacks = [];
+let allAttacksFreq = {};
+let attackers_pos_bubble = {};
+let defenders_pos_bubble = {};
 
 function send_data(vals) {
     // Simple POST request with a JSON body using fetch
@@ -53,38 +55,36 @@ function deselectall(){
     }
 }
 
+function drawLine(context, x1, y1, x2, y2){
+    context.beginPath();
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
+    context.stroke();
+}
+
+function writeText(context, text, x, y){
+    context.font = "10px Arial";
+    context.fillText(text, x, y);
+}
+
+function drawCircle(context, x, y, r){
+    r = Math.min(r, 100);
+    context.fillStyle = "red";
+    context.beginPath();
+    context.arc(x, y, r, 0, 2* Math.PI);
+    context.strokeStyle="red";
+    context.stroke();
+    context.fill();
+    context.closePath();
+}
+
 function TagButton()
 {
 
-    
     const CreateTag = () => {
-        var mainComp = document.getElementById("transition")
         var div = document.createElement("div")
         div.setAttribute("class", "flexbox-container row trans d-flex justify-content-center");
         
-        // var img = []
-        // let i = 0
-        // for (let key in SelectedAttackers){
-        //     img[i] = document.createElement("img")
-        //     img[i].setAttribute("class", "trans-img")
-        //     img[i].src = SelectedAttackers[key]
-        //     div.appendChild(img[i])
-        //     i += 1
-        // }
-        // var arrow = document.createElement("img")
-        // arrow.setAttribute("class", "trans-img")
-        // arrow.src = require("./arrow.png")
-        // div.appendChild(arrow)
-        // for (let key in SelectedDefenders){
-        //     img[i] = document.createElement("img")
-        //     img[i].setAttribute("class", "trans-img")
-        //     img[i].src = SelectedDefenders[key]
-        //     div.appendChild(img[i])
-        //     i += 1
-        // }
-        // mainComp.appendChild(div)
-
-
         let output = {}
         let attackers  =  Object.keys(SelectedAttackers).map(function(k){return k}).join(", ");
         let defenders  =  Object.keys(SelectedDefenders).map(function(k){return k}).join(", ");
@@ -97,34 +97,71 @@ function TagButton()
         const canvasElement = document.getElementById("canvas");
         const context = canvasElement.getContext("2d");
 
-        function drawLine(x1, y1, x2, y2){
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-        }
+        const bubbleCanvasElement = document.getElementById("bubble-canvas");
+        const bubbleContext = bubbleCanvasElement.getContext("2d");
+
+        
 
         const l = Object.keys(candlist).length;
+        const borderGap = 100;
+        const delta = 100;
+        const xOrigin = borderGap;
+        const yOrigin = borderGap + delta * l;
 
-        canvasElement.setAttribute("height", Object.keys(candlist).length*125 +  "px");
+        canvasElement.setAttribute("height", l*125 + "px");
         canvasElement.setAttribute("width", lineWidth + 30 + "px");
 
+        bubbleCanvasElement.setAttribute("height", 200 + delta * l + "px");
+        bubbleCanvasElement.setAttribute("width", "1000px");
+        
+        
+        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin, borderGap);
+        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin + delta * l, yOrigin);
+        
+        const candNameList = Object.keys(candlist);
+        for(let index = 0; index < candNameList.length; index++){
+            let xPos = [xOrigin + delta * (index + 1), yOrigin + 10];
+            let yPos = [xOrigin - 50, yOrigin - delta * (index + 1)];
+            const candName = candNameList[index];
+            attackers_pos_bubble[candName] = yPos;
+            defenders_pos_bubble[candName] = xPos;
+            writeText(bubbleContext, candName, xPos[0], xPos[1]);
+            writeText(bubbleContext, candName, yPos[0], yPos[1]);
+        }
+        
         var itr = 0;
         var arr_pos = 100;
         if(arr_pos + 100 > lineWidth){
             lineWidth += 100;
         }
         for(let candidate in candlist){
-            drawLine(50, 25 + itr, lineWidth, 25 + itr);
+            drawLine(context, 50, 25 + itr, lineWidth, 25 + itr);
             var candidate_img = new Image();
             candidate_img.src = candlist[candidate];
             context.drawImage(candidate_img, 8, itr, 50, 50);
             candidate_positions[candidate] = 25 + itr;
             itr += 75;
-            console.log(candidate, candlist[candidate]);
         }
 
-        allAttacks.push([Object.keys(SelectedAttackers), Object.keys(SelectedDefenders)]);
+        bubbleCanvasElement.onmousemove = function(e) {
+            var rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            console.log(x, y);
+        }
+
+        const selectedAttackersArr = Object.keys(SelectedAttackers);
+        const selectedDefendersArr = Object.keys(SelectedDefenders);
+        allAttacks.push([selectedAttackersArr, selectedDefendersArr]);
+
+
+        for(let selectedAttacker in selectedAttackersArr){
+            for(let selectedDefender in selectedDefendersArr){
+                const key = [selectedAttackersArr[selectedAttacker], selectedDefendersArr[selectedDefender]];
+                console.log(key);
+                allAttacksFreq[key] = key in allAttacksFreq ?  allAttacksFreq[key] + 3 : 5;
+            }   
+        }
 
         for(const attackRound of allAttacks){
             const allAttackers = attackRound[0];
@@ -132,18 +169,23 @@ function TagButton()
             for(const attacker of allAttackers){
                 for(const defender of allDefenders){
                     if(attacker != defender){
+
+                        // Draw line on line chart
                         arr_pos += 30;
-                        drawLine(arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
+                        drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
                         if(candidate_positions[attacker] < candidate_positions[defender]){
                             //down arrow
-                            drawLine(arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-                            drawLine(arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                            drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                            drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
                         }
                         else{
                             //up arrow
-                            drawLine(arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
-                            drawLine(arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
+                            drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
+                            drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
                         }
+
+                        // Draw a bubble on bubble chart
+                        drawCircle(bubbleContext, defenders_pos_bubble[defender][0], attackers_pos_bubble[attacker][1], allAttacksFreq[[attacker, defender]]);
                     }
                 }
             }

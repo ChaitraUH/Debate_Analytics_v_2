@@ -12,6 +12,7 @@ import DefenderAll from "./components/DefenderAll";
 import candlist from "./components/selectCandidatesList";
 
 function Tagging() {
+
   return (
       <div className="container-fluid">
           <div className= "row">
@@ -27,6 +28,12 @@ function Tagging() {
                   <h5 className="font-weight-bold">Attack transition</h5>
                   <canvas id="canvas"></canvas>
               </div>
+          </div>
+          <div className="row">
+          <div className= "col-12 rounded borderclass" id = "bubble">
+          <h5 className="font-weight-bold">Attack transition Bubble chart</h5>
+              <canvas id="bubble-canvas"></canvas>
+          </div>
           </div>
           <div className= "row borderclass">
               <div className="col">
