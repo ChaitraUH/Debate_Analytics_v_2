@@ -10,6 +10,7 @@ import AttackerAll from "./components/AttackerAll";
 import DefenderAll from "./components/DefenderAll";
 
 import candlist from "./components/selectCandidatesList";
+import {Bubble} from 'react-chartjs-2';
 
 function Tagging() {
 
@@ -25,16 +26,35 @@ function Tagging() {
                   <Video/>
               </div>
               <div className= "col-4 rounded borderclass" id = "transition">
-                  <h5 className="font-weight-bold">Attack transition</h5>
-                  <canvas id="canvas"></canvas>
+
+                <input type="radio" name="tabs" id="tab1" />
+                <label for="tab1"><h5 className="font-weight-bold">
+                Attack transition
+                    </h5></label>
+
+                <input type="radio" name="tabs" id="tab2" />
+                <label for="tab2">
+                <h5 className="font-weight-bold">
+                Bubble Chart
+                    </h5>
+                </label>
+
+
+                <div class="tab content1">
+                    <canvas id="canvas"></canvas>
+                </div>
+                <div class="tab content2">
+                    <canvas id="bubble-canvas"></canvas>
+                </div>
+
+
+
+                  
+                
+                
               </div>
           </div>
-          <div className="row">
-          <div className= "col-12 rounded borderclass" id = "bubble">
-          <h5 className="font-weight-bold">Attack transition Bubble chart</h5>
-              <canvas id="bubble-canvas"></canvas>
-          </div>
-          </div>
+          
           <div className= "row borderclass">
               <div className="col">
                  {/*<h5 className="font-weight-bold">Attackers</h5>*/}
