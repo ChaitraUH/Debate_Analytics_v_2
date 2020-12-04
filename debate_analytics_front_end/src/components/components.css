@@ -148,12 +148,17 @@ button p{
 }
 
 .tagbutton {
-    margin-top: 2%;
+    margin-top: 0.5%;
 }
 
 .flexbox-container {
     display: flex;
     flex-direction: row;
+}
+
+.row input{
+    margin-left: 1%;
+    padding-left: 5px;
 }
 
 .trans {

@@ -17,15 +17,11 @@ function Tagging() {
   return (
       <div className="container-fluid">
           <div className= "row">
-              <div className= "col-2 rounded borderclass">
-                   <h5 className="font-weight-bold">Topics</h5>
-                  <Topics/>
-              </div>
               <div className= "col-6 rounded borderclass">
                   <h5 className="font-weight-bold">Video</h5>
                   <Video/>
               </div>
-              <div className= "col-4 rounded borderclass" id = "transition">
+              <div className= "col-6 rounded borderclass" id = "transition">
 
                 <input type="radio" name="tabs" id="tab1" />
                 <label for="tab1"><h5 className="font-weight-bold">
@@ -67,20 +63,33 @@ function Tagging() {
                   </div>
               </div>
           </div>
+          {/*<div className= "row borderclass">*/}
+          {/*    <div className="col">*/}
+          {/*        <h5 className="font-weight-bold">Attacks</h5>*/}
+          {/*    </div>*/}
+          {/*</div>*/}
           <div className= "row borderclass">
               <div className="col">
-                  <h5 className="font-weight-bold">Attacks</h5>
-              </div>
-          </div>
-          <div className= "row borderclass">
-              <div className="col">
-                 {/*<h5 className="font-weight-bold">Defenders</h5>*/}
+                 <h5 className="font-weight-bold">Attacks</h5>
                   <div className="flexbox-container">
                       {
                         Object.entries(candlist)
                         .map( ([key, value]) => <Defender key = {key} name = {key} image = {value} /> )
                       }
                       <DefenderAll/>
+                  </div>
+              </div>
+          </div>
+          {/*<div className= "row borderclass">*/}
+          {/*    <div className="col">*/}
+          {/*        <h5 className="font-weight-bold">Topics</h5>*/}
+          {/*    </div>*/}
+          {/*</div>*/}
+          <div className= "row borderclass">
+              <div className="col">
+                  <h5 className="font-weight-bold">Topics</h5>
+                  <div className="flexbox-container">
+                      <Topics/>
                   </div>
               </div>
           </div>

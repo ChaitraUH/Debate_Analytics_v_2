@@ -24,7 +24,7 @@ class Topics extends React.Component {
 
     render() {
         return (
-            <form>
+            <form className="row">
                 <div className="form-check">
                     <label className="form-check-label check_container">Foreign Policy<input
                         className="form-check-input" type="checkbox" value="Foreign Policy" id="Foreign Policy" onChange={this.checkStatusChange}/>
@@ -58,7 +58,9 @@ class Topics extends React.Component {
                                                                                         type="checkbox" value="Education" id="Education" onChange={this.checkStatusChange}/>
                         <span className="checkmark"></span></label>
                 </div>
-                <input className="form-control" type="text" placeholder="New Topic" onChange={this.newStatusChange}/>
+                <div>
+                <input className="form-control new-topic" type="text" placeholder="New Topic" onChange={this.newStatusChange}/>
+                </div>
             </form>
 
         );
