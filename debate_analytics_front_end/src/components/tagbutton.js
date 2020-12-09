@@ -146,10 +146,11 @@ function TagButton()
         
 
         const l = Object.keys(candlist).length;
-        const borderGap = 25;
+        const xBorderGap = 50;
+        const yBorderGap = 50;
         const delta = 50;
-        const xOrigin = borderGap;
-        const yOrigin = borderGap + delta * l;
+        const xOrigin = xBorderGap;
+        const yOrigin = yBorderGap + delta * l;
 
         canvasElement.setAttribute("height", l*125 + "px");
         canvasElement.setAttribute("width", lineWidth + 30 + "px");
@@ -158,7 +159,7 @@ function TagButton()
         bubbleCanvasElement.setAttribute("width", "1000px");
         
         
-        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin, borderGap);
+        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin, xBorderGap);
         drawLine(bubbleContext, xOrigin, yOrigin, xOrigin + delta * l, yOrigin);
         
         const candNameList = Object.keys(candlist);
