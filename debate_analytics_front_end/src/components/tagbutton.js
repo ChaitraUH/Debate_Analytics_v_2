@@ -146,7 +146,7 @@ function TagButton()
         
 
         const l = Object.keys(candlist).length;
-        const borderGap = 75;
+        const borderGap = 25;
         const delta = 50;
         const xOrigin = borderGap;
         const yOrigin = borderGap + delta * l;
