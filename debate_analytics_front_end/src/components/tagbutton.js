@@ -62,9 +62,22 @@ function drawLine(context, x1, y1, x2, y2){
     context.stroke();
 }
 
-function writeText(context, text, x, y){
-    context.font = "10px Arial";
+function writeText(context, text, x, y, isVertical){
+    if(isVertical){
+        //context.save();
+        const angle = -0.5*Math.PI;
+        //context.translate()
+        console.log(x, y);
+        //context.rotate(angle);
+        context.font = "8px Arial";
+        context.fillText(text, x, y);
+    }
+    else{
+        context.font = "8px Arial";
     context.fillText(text, x, y);
+    }
+    
+
 }
 
 function drawCircle(context, x, y, r){
@@ -133,8 +146,8 @@ function TagButton()
         
 
         const l = Object.keys(candlist).length;
-        const borderGap = 100;
-        const delta = 100;
+        const borderGap = 75;
+        const delta = 50;
         const xOrigin = borderGap;
         const yOrigin = borderGap + delta * l;
 
@@ -155,8 +168,8 @@ function TagButton()
             const candName = candNameList[index];
             attackers_pos_bubble[candName] = yPos;
             defenders_pos_bubble[candName] = xPos;
-            writeText(bubbleContext, candName, xPos[0], xPos[1]);
-            writeText(bubbleContext, candName, yPos[0], yPos[1]);
+            writeText(bubbleContext, candName, xPos[0], xPos[1], true);
+            writeText(bubbleContext, candName, yPos[0], yPos[1], false);
         }
         
         var itr = 0;
@@ -170,16 +183,10 @@ function TagButton()
             candidate_img.src = candlist[candidate];
             context.drawImage(candidate_img, 8, itr, 50, 50);
             candidate_positions[candidate] = 25 + itr;
-            itr += 75;
+            itr += 60;
         }
 
-        bubbleCanvasElement.onmousemove = function(e) {
-            var rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            console.log(x, y);
-        }
-
+        
         const selectedAttackersArr = Object.keys(SelectedAttackers);
         const selectedDefendersArr = Object.keys(SelectedDefenders);
         allAttacks.push([selectedAttackersArr, selectedDefendersArr]);

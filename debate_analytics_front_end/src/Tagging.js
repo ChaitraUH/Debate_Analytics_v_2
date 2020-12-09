@@ -23,23 +23,23 @@ function Tagging() {
               </div>
               <div className= "col-6 rounded borderclass" id = "transition">
 
-                <input type="radio" name="tabs" id="tab1" />
-                <label for="tab1"><h5 className="font-weight-bold">
+                <input type="radio" name="tabs" id="tab1" defaultChecked />
+                <label htmlFor="tab1"><h5 className="font-weight-bold">
                 Attack transition
                     </h5></label>
 
                 <input type="radio" name="tabs" id="tab2" />
-                <label for="tab2">
+                <label htmlFor="tab2">
                 <h5 className="font-weight-bold">
                 Bubble Chart
                     </h5>
                 </label>
 
 
-                <div class="tab content1">
+                <div className="tab content1">
                     <canvas id="canvas"></canvas>
                 </div>
-                <div class="tab content2">
+                <div className="tab content2">
                     <canvas id="bubble-canvas"></canvas>
                 </div>
 
