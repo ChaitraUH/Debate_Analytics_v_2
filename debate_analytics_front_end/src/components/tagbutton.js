@@ -141,7 +141,7 @@ function plotCharts(topics){
 
     const bubbleCanvasElement = document.getElementById("bubble-canvas");
     const bubbleContext = bubbleCanvasElement.getContext("2d");
-    bubbleContext.clearRect(0, 0, bubbleCanvasElement.width, bubbleCanvasElement.height);
+    //bubbleContext.clearRect(0, 0, bubbleCanvasElement.width, bubbleCanvasElement.height);
 
     var itr = 0;
         var arr_pos = 100;
@@ -208,7 +208,12 @@ function TagButton()
 {
 
     const filterChart = () => {
-        plotCharts(SelectedFilter);
+        var allowed_topics = ["Foreign Policy", "Gun Control", "Taxes", "Healthcare", "Economic Inequality", "Education", "Others"];
+        if (SelectedFilter == "All") {
+            plotCharts(allowed_topics);
+        } else {
+            plotCharts(SelectedFilter);
+        }
     }
 
     const CreateTag = () => {
@@ -248,8 +253,8 @@ function TagButton()
         bubbleCanvasElement.setAttribute("width", "1000px");
         
         
-        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin, xBorderGap);
-        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin + delta * l, yOrigin);
+        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin, xBorderGap - 25);
+        drawLine(bubbleContext, xOrigin, yOrigin, xOrigin + delta * l + 50, yOrigin);
         
         const candNameList = Object.keys(candlist);
         for(let index = 0; index < candNameList.length; index++){
@@ -269,18 +274,33 @@ function TagButton()
         const selectedDefendersArr = Object.keys(SelectedDefenders);
         allAttacks.push([selectedAttackersArr, selectedDefendersArr]);
 
+        console.log("-------------HERE-----------------");
 
+        var allowed_topics = ["Foreign Policy", "Gun Control", "Taxes", "Healthcare", "Economic Inequality", "Education"];
         for(let selectedAttacker in selectedAttackersArr){
             for(let selectedDefender in selectedDefendersArr){
                 const key = [selectedAttackersArr[selectedAttacker], selectedDefendersArr[selectedDefender]];
                 allAttacksFreq[key] = key in allAttacksFreq ?  allAttacksFreq[key] + 3 : 5;
                 attacks_timeline.push(key);
-                for(let selectedTopic in SelectedTopics){
-                    if(topic_attack_map.hasOwnProperty(selectedTopic)){
-                        topic_attack_map[selectedTopic].push(attack_id);
+                console.log("Line 285 "+ Object.keys(SelectedTopics));
+                if (Object.keys(SelectedTopics).length == 0) {
+                    //selectedTopic = "Others";
+                    if(topic_attack_map.hasOwnProperty("Others")){
+                        topic_attack_map["Others"].push(attack_id);
                     }
                     else{
-                        topic_attack_map[selectedTopic] = [attack_id];
+                        topic_attack_map["Others"] = [attack_id];
+                    }
+                }
+                else {
+                    for(let selectedTopic in SelectedTopics){
+                        console.log("Selected topic: "+ selectedTopic);
+                        if(topic_attack_map.hasOwnProperty(selectedTopic)){
+                            topic_attack_map[selectedTopic].push(attack_id);
+                        }
+                        else{
+                            topic_attack_map[selectedTopic] = [attack_id];
+                        }
                     }
                 }
                 attack_id += 1;
@@ -290,35 +310,6 @@ function TagButton()
         
 
         plotCharts(Object.keys(topic_attack_map));
-
-        // for(const attackRound of allAttacks){
-        //     const allAttackers = attackRound[0];
-        //     const allDefenders = attackRound[1];
-        //     for(const attacker of allAttackers){
-        //         for(const defender of allDefenders){
-        //             if(attacker != defender){
-
-        //                 // Draw line on line chart
-        //                 arr_pos += 30;
-        //                 drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
-        //                 if(candidate_positions[attacker] < candidate_positions[defender]){
-        //                     //down arrow
-        //                     drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-        //                     drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-        //                 }
-        //                 else{
-        //                     //up arrow
-        //                     drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
-        //                     drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
-        //                 }
-
-        //                 // Draw a bubble on bubble chart
-        //                 drawCircle(bubbleContext, defenders_pos_bubble[defender][0], attackers_pos_bubble[attacker][1], allAttacksFreq[[attacker, defender]]);
-        //             }
-        //         }
-        //     }
-        // }
-
 
         
         if(Object.keys(SelectedTopics).length !== 0) {
