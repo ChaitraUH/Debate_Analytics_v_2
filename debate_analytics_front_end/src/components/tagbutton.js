@@ -21,6 +21,39 @@ let attacks_timeline = [];
 let attack_id = 0;
 
 
+var color_map = {
+    'A. Klobuchar':'red',
+    'A. Yang':'aqua',
+    'B. Sanders':'purple',
+    'B. Orourke':'brown',
+    'B. Weld': 'green',
+    'B. DeBlasio': 'yellow',
+    'C. Booker': 'lightgreen',
+    'D. Patrick':'deeppink',
+    'D. Trump':'indigo',
+    'E. Warren':'blue',
+    'E. Swalwell':'maroon',
+    'J. Inslee':'orange',
+    'J. Biden':'orchid',
+    'J. Sestak':'seagreen',
+    'J. Walsh':'teal',
+    'J. Delaney':'slategray',
+    'J. Hickenlooper':'silver',
+    'J. Castro':'pink',
+    'K. Harris':'magenta',
+    'K. Gillibrand':'crimson',
+    'M. Sanford':'chocolate',
+    'M. Williomson':'cyan',
+    'M. Bloomberg':'darkgray',
+    'P. Buttigieg':'MediumTurquoise',
+    'R. Ojeda':'Navy',
+    'S. Moulton':'Olive',
+    'S. Bullock':'PaleVioletRed',
+    'T. Ryan':'RoyalBlue',
+    'T. Steyer':'Salmon',
+    'T. Gabbard':'Tomato',
+    'W. Messam':'YellowGreen'};
+
 let candidate_positions = new Object();
 
 function send_data(vals) {
@@ -63,10 +96,11 @@ function deselectall(){
     }
 }
 
-function drawLine(context, x1, y1, x2, y2){
+function drawLine(context, x1, y1, x2, y2, color){
     context.beginPath();
     context.moveTo(x1, y1);
     context.lineTo(x2, y2);
+    context.strokeStyle = color;
     context.stroke();
 }
 
@@ -115,7 +149,7 @@ function plotCharts(topics){
             lineWidth += 100;
         }
         for(let candidate in candlist){
-            drawLine(context, 50, 25 + itr, lineWidth, 25 + itr);
+            drawLine(context, 50, 25 + itr, lineWidth, 25 + itr, "black");
             var candidate_img = new Image();
             candidate_img.src = candlist[candidate];
             context.drawImage(candidate_img, 8, itr, 50, 50);
@@ -151,16 +185,16 @@ function plotCharts(topics){
             if(attacker != defender){
 
                 // Draw line on line chart
-                drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
+                drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender], color_map[attacker]);
                 if(candidate_positions[attacker] < candidate_positions[defender]){
                     //down arrow
-                    drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-                    drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                    drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender], color_map[attacker]);
+                    drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender], color_map[attacker]);
                 }
                 else{
                     //up arrow
-                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
-                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
+                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20, color_map[attacker]);
+                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20, color_map[attacker]);
                 }
 
                 // Draw a bubble on bubble chart
