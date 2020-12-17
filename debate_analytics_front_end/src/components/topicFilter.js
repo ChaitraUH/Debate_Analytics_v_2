@@ -9,7 +9,7 @@ class TopicFilter extends React.Component{
 
     render(){
         return (
-            <select onChange={this.updateFilter}>
+            <select class="topic-filter" onChange={this.updateFilter}>
                     <option value="All">All</option>
                     <option value="Foreign Policy">Foreign Policy</option>
                     <option value="Gun Control">Gun Control</option>

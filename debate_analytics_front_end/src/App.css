@@ -65,3 +65,7 @@ input ~ .tab {
   border-top: 1px solid #999;
   padding: 12px;
 }
+
+.topic-filter{
+  font-family: "Times New Roman", Times, serif;
+}

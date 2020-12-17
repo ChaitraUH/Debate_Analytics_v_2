@@ -22,7 +22,7 @@ function Tagging() {
                   <Video/>
               </div>
               <div className= "col-6 rounded borderclass" id = "transition">
-                <TopicFilter/>
+                
                 <input type="radio" name="tabs" id="tab1" defaultChecked />
                 <label htmlFor="tab1"><h5 className="font-weight-bold">
                 Attack transition
@@ -93,6 +93,18 @@ function Tagging() {
                   </div>
               </div>
           </div>
+
+
+          <div className= "row borderclass">
+          
+              <div className="col">
+                  <h5 className="font-weight-bold">Filter Topics</h5>
+                  <div>
+                    <TopicFilter/>
+                  </div>
+              </div>
+          </div>
+
           <TagButton/>
       </div>
   );
