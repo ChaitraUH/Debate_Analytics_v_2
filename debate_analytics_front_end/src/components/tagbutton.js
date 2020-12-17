@@ -8,6 +8,7 @@ import NewTopic from "./newtopic";
 import candlist from "./selectCandidatesList";
 import isAttackAll from "./isAttackAll";
 import isDefendAll from "./isDefendAll";
+import SelectedFilter from './selectedFilter';
 
 var lineWidth = 1000;
 
@@ -15,6 +16,12 @@ let allAttacks = [];
 let allAttacksFreq = {};
 let attackers_pos_bubble = {};
 let defenders_pos_bubble = {};
+let topic_attack_map = {};
+let attacks_timeline = [];
+let attack_id = 0;
+
+
+let candidate_positions = new Object();
 
 function send_data(vals) {
     // Simple POST request with a JSON body using fetch
@@ -36,6 +43,7 @@ function deselectall(){
     //     }
     for (let topic in SelectedTopics){
         document.getElementById(topic).click()
+        console.log(topic);
     }
     if (isAttackAll["All"]){
         document.getElementById("attackall").click()
@@ -92,50 +100,97 @@ function drawCircle(context, x, y, r){
 }
 
 
-const data = {
-    labels: ['January'],
-    datasets: [
-      {
-        label: 'My First dataset',
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
-        borderCapStyle: 'butt',
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: 'miter',
-        pointBorderColor: 'rgba(75,192,192,1)',
-        pointBackgroundColor: '#fff',
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-        pointHoverBorderColor: 'rgba(220,220,220,1)',
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: [{x:10,y:20,r:5}]
-      }
-    ]
-  };
+function plotCharts(topics){
+    const canvasElement = document.getElementById("canvas");
+    const context = canvasElement.getContext("2d");
+    context.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-  
+    const bubbleCanvasElement = document.getElementById("bubble-canvas");
+    const bubbleContext = bubbleCanvasElement.getContext("2d");
+    bubbleContext.clearRect(0, 0, bubbleCanvasElement.width, bubbleCanvasElement.height);
+
+    var itr = 0;
+        var arr_pos = 100;
+        if(arr_pos + 100 > lineWidth){
+            lineWidth += 100;
+        }
+        for(let candidate in candlist){
+            drawLine(context, 50, 25 + itr, lineWidth, 25 + itr);
+            var candidate_img = new Image();
+            candidate_img.src = candlist[candidate];
+            context.drawImage(candidate_img, 8, itr, 50, 50);
+            candidate_positions[candidate] = 25 + itr;
+            itr += 60;
+        }
+
+    console.log("pltCharts begins");
+    console.log(topics);
+    console.log(topic_attack_map);
+
+    let filtered_attacks = new Set();
+    
+    for(let topic in topics){
+        if(topic_attack_map.hasOwnProperty(topics[topic])){
+            for(let jindex=0; jindex< topic_attack_map[topics[topic]].length || 0; jindex++){
+                filtered_attacks.add(topic_attack_map[topics[topic]][jindex]);
+            }
+        }
+    }
+    let filtered_attacks_arr = Array.from(filtered_attacks);
+
+    console.log(filtered_attacks_arr);
+    for(let i=0;i<attacks_timeline.length;i++){
+        console.log(filtered_attacks_arr.includes(i));
+        arr_pos += 30;
+        if(filtered_attacks_arr.includes(i)){
+            const fa = attacks_timeline[i];
+            console.log(fa);
+            const attacker = fa[0];
+            const defender = fa[1];
+
+            if(attacker != defender){
+
+                // Draw line on line chart
+                drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
+                if(candidate_positions[attacker] < candidate_positions[defender]){
+                    //down arrow
+                    drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                    drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+                }
+                else{
+                    //up arrow
+                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
+                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
+                }
+
+                // Draw a bubble on bubble chart
+                drawCircle(bubbleContext, defenders_pos_bubble[defender][0], attackers_pos_bubble[attacker][1], allAttacksFreq[[attacker, defender]]);
+            }
+        }
+    }
+}
+
 function TagButton()
 {
 
+    const filterChart = () => {
+        plotCharts(SelectedFilter);
+    }
+
     const CreateTag = () => {
 
-        var div = document.createElement("div")
-        div.setAttribute("class", "flexbox-container row trans d-flex justify-content-center");
-        
         let output = {}
         let attackers  =  Object.keys(SelectedAttackers).map(function(k){return k}).join(", ");
         let defenders  =  Object.keys(SelectedDefenders).map(function(k){return k}).join(", ");
         
         let topics = "";
         
-        
-        let candidate_positions = new Object();
+        let dd = document.createElement("select");
+        let row = document.createElement("option");
+        dd.setAttribute("id", "dd");
+        dd.setAttribute("onChange", "test()");
+        dd.appendChild(row);
+
 
         const canvasElement = document.getElementById("canvas");
         const context = canvasElement.getContext("2d");
@@ -143,7 +198,7 @@ function TagButton()
         const bubbleCanvasElement = document.getElementById("bubble-canvas");
         const bubbleContext = bubbleCanvasElement.getContext("2d");
 
-        
+        canvasElement.appendChild(dd);
 
         const l = Object.keys(candlist).length;
         const xBorderGap = 50;
@@ -173,19 +228,7 @@ function TagButton()
             writeText(bubbleContext, candName, yPos[0], yPos[1], false);
         }
         
-        var itr = 0;
-        var arr_pos = 100;
-        if(arr_pos + 100 > lineWidth){
-            lineWidth += 100;
-        }
-        for(let candidate in candlist){
-            drawLine(context, 50, 25 + itr, lineWidth, 25 + itr);
-            var candidate_img = new Image();
-            candidate_img.src = candlist[candidate];
-            context.drawImage(candidate_img, 8, itr, 50, 50);
-            candidate_positions[candidate] = 25 + itr;
-            itr += 60;
-        }
+        
 
         
         const selectedAttackersArr = Object.keys(SelectedAttackers);
@@ -196,38 +239,51 @@ function TagButton()
         for(let selectedAttacker in selectedAttackersArr){
             for(let selectedDefender in selectedDefendersArr){
                 const key = [selectedAttackersArr[selectedAttacker], selectedDefendersArr[selectedDefender]];
-                console.log(key);
                 allAttacksFreq[key] = key in allAttacksFreq ?  allAttacksFreq[key] + 3 : 5;
+                attacks_timeline.push(key);
+                for(let selectedTopic in SelectedTopics){
+                    if(topic_attack_map.hasOwnProperty(selectedTopic)){
+                        topic_attack_map[selectedTopic].push(attack_id);
+                    }
+                    else{
+                        topic_attack_map[selectedTopic] = [attack_id];
+                    }
+                }
+                attack_id += 1;
             }   
         }
 
-        for(const attackRound of allAttacks){
-            const allAttackers = attackRound[0];
-            const allDefenders = attackRound[1];
-            for(const attacker of allAttackers){
-                for(const defender of allDefenders){
-                    if(attacker != defender){
+        
 
-                        // Draw line on line chart
-                        arr_pos += 30;
-                        drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
-                        if(candidate_positions[attacker] < candidate_positions[defender]){
-                            //down arrow
-                            drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-                            drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
-                        }
-                        else{
-                            //up arrow
-                            drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
-                            drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
-                        }
+        plotCharts(Object.keys(topic_attack_map));
 
-                        // Draw a bubble on bubble chart
-                        drawCircle(bubbleContext, defenders_pos_bubble[defender][0], attackers_pos_bubble[attacker][1], allAttacksFreq[[attacker, defender]]);
-                    }
-                }
-            }
-        }
+        // for(const attackRound of allAttacks){
+        //     const allAttackers = attackRound[0];
+        //     const allDefenders = attackRound[1];
+        //     for(const attacker of allAttackers){
+        //         for(const defender of allDefenders){
+        //             if(attacker != defender){
+
+        //                 // Draw line on line chart
+        //                 arr_pos += 30;
+        //                 drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender]);
+        //                 if(candidate_positions[attacker] < candidate_positions[defender]){
+        //                     //down arrow
+        //                     drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+        //                     drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender]);
+        //                 }
+        //                 else{
+        //                     //up arrow
+        //                     drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20);
+        //                     drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20);
+        //                 }
+
+        //                 // Draw a bubble on bubble chart
+        //                 drawCircle(bubbleContext, defenders_pos_bubble[defender][0], attackers_pos_bubble[attacker][1], allAttacksFreq[[attacker, defender]]);
+        //             }
+        //         }
+        //     }
+        // }
 
 
         
@@ -258,6 +314,7 @@ function TagButton()
     return(
         <div className="text-center">
             <button className="btn btn-primary tagbutton" onClick={CreateTag}> Tag </button>
+            <button className="btn btn-primary tagbutton" onClick={filterChart}>Filter</button>
         </div>
     )
 }

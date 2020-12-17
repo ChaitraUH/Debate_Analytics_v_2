@@ -10,7 +10,7 @@ import AttackerAll from "./components/AttackerAll";
 import DefenderAll from "./components/DefenderAll";
 
 import candlist from "./components/selectCandidatesList";
-import {Bubble} from 'react-chartjs-2';
+import TopicFilter from "./components/topicFilter";
 
 function Tagging() {
 
@@ -22,7 +22,7 @@ function Tagging() {
                   <Video/>
               </div>
               <div className= "col-6 rounded borderclass" id = "transition">
-
+                <TopicFilter/>
                 <input type="radio" name="tabs" id="tab1" defaultChecked />
                 <label htmlFor="tab1"><h5 className="font-weight-bold">
                 Attack transition
