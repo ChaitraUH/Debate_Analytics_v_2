@@ -188,13 +188,13 @@ function plotCharts(topics){
                 drawLine(context, arr_pos, candidate_positions[attacker], arr_pos, candidate_positions[defender], color_map[attacker]);
                 if(candidate_positions[attacker] < candidate_positions[defender]){
                     //down arrow
-                    drawLine(context, arr_pos - 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender], color_map[attacker]);
-                    drawLine(context, arr_pos + 15, candidate_positions[defender] - 20, arr_pos, candidate_positions[defender], color_map[attacker]);
+                    drawLine(context, arr_pos - 7, candidate_positions[defender] - 10, arr_pos, candidate_positions[defender], color_map[attacker]);
+                    drawLine(context, arr_pos + 7, candidate_positions[defender] - 10, arr_pos, candidate_positions[defender], color_map[attacker]);
                 }
                 else{
                     //up arrow
-                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 15, candidate_positions[defender] + 20, color_map[attacker]);
-                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 15, candidate_positions[defender] + 20, color_map[attacker]);
+                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos - 7, candidate_positions[defender] + 10, color_map[attacker]);
+                    drawLine(context, arr_pos, candidate_positions[defender], arr_pos + 7, candidate_positions[defender] + 10, color_map[attacker]);
                 }
 
                 // Draw a bubble on bubble chart
